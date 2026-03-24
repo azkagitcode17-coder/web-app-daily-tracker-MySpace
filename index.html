@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MySpace — Ruang Pribadiku</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>"/>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <!-- CSS Eksternal -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Firebase (module) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc, onSnapshot, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // =============================================
+    // ⚠️  GANTI DENGAN KONFIGURASI FIREBASE ANDA  ⚠️
+    // =============================================
+    const firebaseConfig = {
+    apiKey: "AIzaSyBtjH0SzFAsvC7am6rVCBjfV2haxou3rf4",
+    authDomain: "web-app-daily-tracker.firebaseapp.com",
+    projectId: "web-app-daily-tracker",
+    storageBucket: "web-app-daily-tracker.firebasestorage.app",
+    messagingSenderId: "831073695929",
+    appId: "1:831073695929:web:2fe5e9e45f552431a40368"
+  };
+    // =============================================
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Expose to global
+    window.db = db;
+    window.firestore = { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc, onSnapshot, where };
+    window.firebaseReady = true;
+    document.dispatchEvent(new Event('firebaseReady'));
+  </script>
+</head>
+
+<body>
+  <!-- TAMBAHKAN INI DI PALING ATAS SETELAH <body> -->
+  <script>
+    // Cek apakah sudah login
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+      window.location.href = 'login.html';
+    }
+  </script>
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🌙</div>
+      <span class="logo-text">MySpace</span>
+    </div>
+
+    <div style="overflow-y:auto; flex:1;">
+      <div class="nav-section">
+        <div class="nav-section-label">Utama</div>
+        <a class="nav-item active" data-page="dashboard">
+          <i class="bi bi-grid-fill"></i>
+          <span class="nav-label">Dashboard</span>
+        </a>
+        <a class="nav-item" data-page="finance">
+          <i class="bi bi-wallet2"></i>
+          <span class="nav-label">Keuangan</span>
+        </a>
+        <a class="nav-item" data-page="study">
+          <i class="bi bi-book-fill"></i>
+          <span class="nav-label">Belajar</span>
+        </a>
+        <a class="nav-item" data-page="grades">
+          <i class="bi bi-mortarboard-fill"></i>
+          <span class="nav-label">Nilai</span>
+        </a>
+        <a class="nav-item" data-page="schedule">
+          <i class="bi bi-check2-square"></i>
+          <span class="nav-label">Jadwal Harian</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Alat</div>
+        <a class="nav-item" data-page="calendar">
+          <i class="bi bi-calendar3"></i>
+          <span class="nav-label">Kalender</span>
+        </a>
+        <a class="nav-item" data-page="clock">
+          <i class="bi bi-clock-fill"></i>
+          <span class="nav-label">Jam Indonesia</span>
+        </a>
+        <a class="nav-item" data-page="calc">
+          <i class="bi bi-calculator-fill"></i>
+          <span class="nav-label">Kalkulator</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <a class="nav-item" id="toggle-sidebar-btn">
+        <i class="bi bi-layout-sidebar-inset-reverse" id="toggle-icon"></i>
+        <span class="nav-label">Tutup Sidebar</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- OVERLAY MOBILE -->
+  <div class="overlay-bg" id="overlay-bg"></div>
+
+  <!-- MAIN -->
+  <div id="main-content">
+    <!-- TOPBAR -->
+    <div id="topbar">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span class="page-title" id="topbar-title">Dashboard</span>
+      </div>
+      <div class="topbar-actions">
+        <div class="search-wrap" style="position:relative;">
+          <i class="bi bi-search" style="font-size:13px;"></i>
+          <input type="text" id="global-search" placeholder="Cari fitur..."/>
+          <div id="search-results"></div>
+        </div>
+        <div class="icon-btn" id="theme-toggle" title="Toggle tema">
+          <i class="bi bi-moon-stars-fill" id="theme-icon"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGES (konten akan dimuat dari file terpisah) -->
+    <div class="page active" id="page-dashboard"></div>
+    <div class="page" id="page-finance"></div>
+    <div class="page" id="page-study"></div>
+    <div class="page" id="page-grades"></div>
+    <div class="page" id="page-schedule"></div>
+    <div class="page" id="page-calendar"></div>
+    <div class="page" id="page-clock"></div>
+    <div class="page" id="page-calc"></div>
+  </div>
+
+  <!-- MOBILE TOGGLE -->
+  <div id="mobile-toggle"><i class="bi bi-list"></i></div>
+
+  <!-- MODALS -->
+  <!-- Add Schedule Modal -->
+  <div class="modal-overlay" id="modal-schedule">
+    <div class="modal-box">
+      <div class="modal-title">
+        <span><i class="bi bi-calendar-plus-fill" style="color:var(--accent);margin-right:8px;"></i>Tambah Jadwal</span>
+        <span style="cursor:pointer;color:var(--text-muted);" id="close-modal-schedule"><i class="bi bi-x-lg"></i></span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nama Kegiatan</label>
+        <input class="form-input" id="sch-name" placeholder="Contoh: Olahraga pagi"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Waktu</label>
+        <input class="form-input" id="sch-time" type="time"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kategori</label>
+        <select class="form-select" id="sch-cat">
+          <option>📚 Belajar</option>
+          <option>🏃 Olahraga</option>
+          <option>🍽️ Makan</option>
+          <option>💼 Kerja</option>
+          <option>🎮 Hiburan</option>
+          <option>🛌 Istirahat</option>
+          <option>📝 Lainnya</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="sch-save-btn" style="width:100%;">
+        <i class="bi bi-plus-lg"></i> Simpan
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Script untuk memuat konten halaman dari file terpisah -->
+  <script>
+    (async function() {
+      const pages = [
+        { id: 'dashboard', file: 'dashboard.html' },
+        { id: 'finance',   file: 'finance.html' },
+        { id: 'study',     file: 'study.html' },
+        { id: 'grades',    file: 'grades.html' },
+        { id: 'schedule',  file: 'schedule.html' },
+        { id: 'calendar',  file: 'calendar.html' },
+        { id: 'clock',     file: 'clock.html' },
+        { id: 'calc',      file: 'calc.html' }
+      ];
+
+      const loadPage = async (id, file) => {
+        try {
+          const res = await fetch(file);
+          const html = await res.text();
+          document.getElementById(`page-${id}`).innerHTML = html;
+        } catch (err) {
+          console.error(`Gagal memuat ${file}:`, err);
+        }
+      };
+
+      await Promise.all(pages.map(p => loadPage(p.id, p.file)));
+
+      // Setelah semua konten dimuat, muat script.js
+      const script = document.createElement('script');
+      script.src = 'script.js';
+      document.body.appendChild(script);
+    })();
+  </script>
+</body>
+</html>

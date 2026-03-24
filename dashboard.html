@@ -1,0 +1,33 @@
+<div id="config-banner">
+  <i class="bi bi-exclamation-triangle-fill"></i>
+  <span>Dibuat oleh = Natus.Dev ❤️</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
+  <div class="stat-card">
+    <div class="stat-label"><i class="bi bi-wallet2"></i> Saldo</div>
+    <div class="stat-value" id="dash-balance" style="color:var(--success)">Rp 0</div>
+    <div class="stat-sub">Total keuangan</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label"><i class="bi bi-book-fill"></i> Sesi Belajar</div>
+    <div class="stat-value" id="dash-study">0</div>
+    <div class="stat-sub">Berhasil hari ini</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label"><i class="bi bi-check2-all"></i> Jadwal</div>
+    <div class="stat-value" id="dash-schedule">0%</div>
+    <div class="stat-sub">Selesai hari ini</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label"><i class="bi bi-mortarboard-fill"></i> Rata-rata</div>
+    <div class="stat-value" id="dash-grade">-</div>
+    <div class="stat-sub">Nilai terakhir</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+  <div class="card" style="grid-column:1/-1;">
+    <div class="card-title"><i class="bi bi-graph-up-arrow"></i> Ringkasan Keuangan Bulan Ini</div>
+    <canvas id="dash-chart" height="120"></canvas>
+  </div>
+</div>

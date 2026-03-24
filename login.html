@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - MySpace</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+    }
+    .login-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .login-title {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .login-title i {
+      font-size: 48px;
+      color: #667eea;
+    }
+    .login-title h1 {
+      font-size: 28px;
+      margin-top: 10px;
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #666;
+      font-weight: 500;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .error-message {
+      background: #fee;
+      color: #c33;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      display: none;
+    }
+    .switch-mode {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #666;
+    }
+    .switch-mode a {
+      color: #667eea;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .switch-mode a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-title">
+        <i class="bi bi-stars"></i>
+        <h1>MySpace</h1>
+        <p style="color: #888; font-size: 14px; margin-top: 5px;">Ruang Pribadiku</p>
+      </div>
+      
+      <div id="errorMsg" class="error-message"></div>
+      
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="contoh@email.com">
+      </div>
+      
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="********">
+      </div>
+      
+      <button class="btn" id="actionBtn">Masuk</button>
+      
+      <div class="switch-mode">
+        <span id="switchText">Belum punya akun?</span>
+        <a id="switchLink">Daftar sekarang</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    
+    // ⚠️ GANTI DENGAN KONFIGURASI FIREBASE ANDA ⚠️
+    const firebaseConfig = {
+    apiKey: "AIzaSyBtjH0SzFAsvC7am6rVCBjfV2haxou3rf4",
+    authDomain: "web-app-daily-tracker.firebaseapp.com",
+    projectId: "web-app-daily-tracker",
+    storageBucket: "web-app-daily-tracker.firebasestorage.app",
+    messagingSenderId: "831073695929",
+    appId: "1:831073695929:web:2fe5e9e45f552431a40368"
+  };
+    // ============================================
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    
+    let isLoginMode = true;
+    
+    function showError(msg) {
+      const errorDiv = document.getElementById('errorMsg');
+      errorDiv.textContent = msg;
+      errorDiv.style.display = 'block';
+      setTimeout(() => errorDiv.style.display = 'none', 3000);
+    }
+    
+    document.getElementById('actionBtn').addEventListener('click', async () => {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      if (!email || !password) {
+        showError('Isi email dan password!');
+        return;
+      }
+      
+      try {
+        if (isLoginMode) {
+          // Login
+          await signInWithEmailAndPassword(auth, email, password);
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('userEmail', email);
+          window.location.href = 'index.html';
+        } else {
+          // Daftar
+          await createUserWithEmailAndPassword(auth, email, password);
+          showError('✅ Akun berhasil dibuat! Silakan login.');
+          // Kembali ke mode login
+          isLoginMode = true;
+          document.getElementById('actionBtn').textContent = 'Masuk';
+          document.getElementById('switchText').textContent = 'Belum punya akun?';
+          document.getElementById('switchLink').textContent = 'Daftar sekarang';
+          document.getElementById('password').value = '';
+        }
+      } catch (error) {
+        if (error.code === 'auth/user-not-found') {
+          showError('Email tidak terdaftar');
+        } else if (error.code === 'auth/wrong-password') {
+          showError('Password salah');
+        } else if (error.code === 'auth/email-already-in-use') {
+          showError('Email sudah terdaftar');
+        } else {
+          showError(error.message);
+        }
+      }
+    });
+    
+    document.getElementById('switchLink').addEventListener('click', () => {
+      isLoginMode = !isLoginMode;
+      if (isLoginMode) {
+        document.getElementById('actionBtn').textContent = 'Masuk';
+        document.getElementById('switchText').textContent = 'Belum punya akun?';
+        document.getElementById('switchLink').textContent = 'Daftar sekarang';
+      } else {
+        document.getElementById('actionBtn').textContent = 'Daftar';
+        document.getElementById('switchText').textContent = 'Sudah punya akun?';
+        document.getElementById('switchLink').textContent = 'Masuk';
+      }
+      document.getElementById('errorMsg').style.display = 'none';
+    });
+  </script>
+</body>
+</html>
