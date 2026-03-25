@@ -5,7 +5,7 @@
    ============================================================ */
 
 // =================== CACHE BUSTER ===================
-const APP_VERSION = '1.1.4';
+const APP_VERSION = '1.4.0';
 const storedVersion = localStorage.getItem('app_version');
 if (storedVersion !== APP_VERSION) {
   localStorage.setItem('app_version', APP_VERSION);

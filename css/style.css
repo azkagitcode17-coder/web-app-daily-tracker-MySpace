@@ -493,3 +493,92 @@ body {
 #sidebar.collapsed #sidebar-user { opacity: 0; pointer-events: none; }
 #logout-btn { color: var(--danger) !important; }
 #logout-btn:hover { background: rgba(248,113,113,0.1) !important; color: var(--danger) !important; }
+
+/* ============================================================
+   MOBILE RESPONSIVE — Perbaikan layout HP/tablet
+   ============================================================ */
+
+/* Semua grid 2 kolom jadi 1 kolom di HP */
+@media (max-width: 640px) {
+  .page { padding: 12px; }
+
+  /* Finance: form + riwayat stack vertikal */
+  #page-finance > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Grades: form + riwayat stack vertikal */
+  #page-grades > div {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Study: form di atas, list di bawah */
+  #page-study > div {
+    grid-template-columns: 1fr !important;
+  }
+  #page-study .card[style*="sticky"] {
+    position: static !important;
+  }
+
+  /* Schedule: list full width, donut di bawah */
+  #page-schedule > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+  #page-schedule > div:last-child > div:last-child {
+    text-align: center;
+  }
+
+  /* Dashboard: stat cards 2 kolom di HP */
+  #page-dashboard > div:first-child {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Topbar search lebih kecil */
+  .search-wrap input { width: 120px !important; }
+  .search-wrap input:focus { width: 160px !important; }
+
+  /* Clock: 1 kolom */
+  #page-clock > div {
+    grid-template-columns: 1fr !important;
+  }
+  .clock-display { font-size: 32px !important; }
+
+  /* Finance item wrap di HP */
+  .finance-item {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .finance-item-left { flex: 1; min-width: 0; }
+
+  /* Stat card lebih compact */
+  .stat-value { font-size: 20px !important; }
+  .stat-card  { padding: 12px 14px !important; }
+
+  /* Card padding lebih kecil */
+  .card { padding: 14px !important; }
+
+  /* Tombol lebih mudah ditekan di HP */
+  .btn { padding: 9px 14px; font-size: 13px; }
+  .btn-sm { padding: 7px 12px !important; font-size: 12px !important; }
+
+  /* Modal lebih kecil */
+  .modal-box { padding: 20px 18px; }
+
+  /* Study item actions */
+  .study-item .btn { flex: 1; justify-content: center; }
+}
+
+/* Tablet (641px - 900px) */
+@media (min-width: 641px) and (max-width: 900px) {
+  #page-finance > div:last-child { grid-template-columns: 1fr !important; }
+  #page-study > div { grid-template-columns: 1fr !important; }
+  #page-study .card[style*="sticky"] { position: static !important; }
+}
+
+/* Jadwal: hapus grid kaku agar donut tidak terlalu jauh */
+@media (max-width: 500px) {
+  #page-schedule > div:last-child {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+}
