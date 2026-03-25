@@ -1,0 +1,59 @@
+<!-- ============================================================
+     pages/grades.html — Halaman Rata-rata Nilai
+     ============================================================ -->
+<div class="page" id="page-grades">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+    <!-- Form Hitung Nilai -->
+    <div class="card">
+      <div class="card-title"><i class="bi bi-plus-circle-fill"></i> Hitung Rata-rata Nilai</div>
+
+      <div id="grade-inputs">
+        <div class="grade-row">
+          <input class="form-input" placeholder="Nama Mapel" style="flex:2"/>
+          <input class="form-input" type="number" placeholder="Nilai" min="0" max="100"/>
+          <button class="btn btn-danger btn-sm remove-grade-row"><i class="bi bi-trash"></i></button>
+        </div>
+      </div>
+
+      <button class="btn btn-ghost btn-sm" id="add-grade-row" style="margin-top:8px;margin-bottom:16px;">
+        <i class="bi bi-plus-lg"></i> Tambah Mapel
+      </button>
+
+      <div class="divider"></div>
+
+      <div class="form-group">
+        <label class="form-label">Nama Set Nilai</label>
+        <input class="form-input" id="grade-set-name" placeholder="Contoh: UTS Semester 1"/>
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-primary" id="calc-avg-btn" style="flex:1">
+          <i class="bi bi-calculator"></i> Hitung
+        </button>
+        <button class="btn btn-success" id="save-grade-btn" style="flex:1">
+          <i class="bi bi-floppy-fill"></i> Simpan
+        </button>
+      </div>
+
+      <!-- Hasil Perhitungan -->
+      <div id="grade-result" style="margin-top:16px;display:none;">
+        <div class="divider"></div>
+        <div style="text-align:center;">
+          <div style="font-size:13px;color:var(--text-muted);">Rata-rata Nilai</div>
+          <div style="font-size:48px;font-weight:800;" id="avg-result">-</div>
+          <div style="font-size:12px;" id="avg-grade-label"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Riwayat Nilai -->
+    <div class="card">
+      <div class="card-title"><i class="bi bi-journal-richtext"></i> Riwayat Nilai</div>
+      <div id="grade-history-list" style="max-height:420px;overflow-y:auto;">
+        <div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">Belum ada riwayat</div>
+      </div>
+    </div>
+
+  </div>
+</div>

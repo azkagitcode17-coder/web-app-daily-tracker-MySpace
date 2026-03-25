@@ -1,0 +1,42 @@
+<!-- ============================================================
+     pages/dashboard.html — Halaman Dashboard
+     ============================================================ -->
+<div class="page active" id="page-dashboard">
+
+  <!-- Banner peringatan Firebase -->
+  <div id="config-banner">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span>⚙️ Ganti konfigurasi Firebase di <strong>js/firebase.js</strong> dengan config proyekmu sebelum deploy!</span>
+  </div>
+
+  <!-- Stat Cards -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
+    <div class="stat-card">
+      <div class="stat-label"><i class="bi bi-wallet2"></i> Saldo</div>
+      <div class="stat-value" id="dash-balance" style="color:var(--success)">Rp 0</div>
+      <div class="stat-sub">Total keuangan</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="bi bi-book-fill"></i> Sesi Belajar</div>
+      <div class="stat-value" id="dash-study">0</div>
+      <div class="stat-sub">Berhasil hari ini</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="bi bi-check2-all"></i> Jadwal</div>
+      <div class="stat-value" id="dash-schedule">0%</div>
+      <div class="stat-sub">Selesai hari ini</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label"><i class="bi bi-mortarboard-fill"></i> Rata-rata</div>
+      <div class="stat-value" id="dash-grade">-</div>
+      <div class="stat-sub">Nilai terakhir</div>
+    </div>
+  </div>
+
+  <!-- Chart Keuangan -->
+  <div class="card">
+    <div class="card-title"><i class="bi bi-graph-up-arrow"></i> Ringkasan Keuangan 7 Hari Terakhir</div>
+    <canvas id="dash-chart" height="120"></canvas>
+  </div>
+
+</div>

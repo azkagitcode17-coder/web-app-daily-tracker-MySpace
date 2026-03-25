@@ -1,75 +1,43 @@
 <!DOCTYPE html>
 <html lang="id" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- ===== ANTI-CACHE ===== -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma"        content="no-cache"/>
+  <meta http-equiv="Expires"       content="0"/>
+
   <title>MySpace — Ruang Pribadiku</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>"/>
 
-  <!-- Tailwind CDN -->
+  <!-- ===== CDN LIBRARIES ===== -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Bootstrap Icons -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
-
-  <!-- Chart.js -->
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <link  rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"/>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-  <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-  <!-- CSS Eksternal -->
-  <link rel="stylesheet" href="style.css">
+  <!-- ===== STYLESHEET UTAMA ===== -->
+  <link rel="stylesheet" href="css/style.css"/>
 
-  <!-- Firebase (module) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc, onSnapshot, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    // =============================================
-    // ⚠️  GANTI DENGAN KONFIGURASI FIREBASE ANDA  ⚠️
-    // =============================================
-    const firebaseConfig = {
-    apiKey: "AIzaSyBtjH0SzFAsvC7am6rVCBjfV2haxou3rf4",
-    authDomain: "web-app-daily-tracker.firebaseapp.com",
-    projectId: "web-app-daily-tracker",
-    storageBucket: "web-app-daily-tracker.firebasestorage.app",
-    messagingSenderId: "831073695929",
-    appId: "1:831073695929:web:2fe5e9e45f552431a40368"
-  };
-    // =============================================
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Expose to global
-    window.db = db;
-    window.firestore = { collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy, setDoc, getDoc, onSnapshot, where };
-    window.firebaseReady = true;
-    document.dispatchEvent(new Event('firebaseReady'));
-  </script>
+  <!-- ===== FIREBASE (module) ===== -->
+  <script type="module" src="js/firebase.js"></script>
 </head>
 
 <body>
-  <!-- TAMBAHKAN INI DI PALING ATAS SETELAH <body> -->
-  <script>
-    // Cek apakah sudah login
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    if (!isLoggedIn) {
-      window.location.href = 'login.html';
-    }
-  </script>
-  <!-- SIDEBAR -->
+
+  <!-- ============================================================
+       SIDEBAR
+       ============================================================ -->
   <nav id="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon">🌙</div>
       <span class="logo-text">MySpace</span>
     </div>
 
-    <div style="overflow-y:auto; flex:1;">
+    <div style="overflow-y:auto;flex:1;">
       <div class="nav-section">
         <div class="nav-section-label">Utama</div>
         <a class="nav-item active" data-page="dashboard">
@@ -93,6 +61,7 @@
           <span class="nav-label">Jadwal Harian</span>
         </a>
       </div>
+
       <div class="nav-section">
         <div class="nav-section-label">Alat</div>
         <a class="nav-item" data-page="calendar">
@@ -111,25 +80,36 @@
     </div>
 
     <div class="sidebar-bottom">
-      <a class="nav-item" id="toggle-sidebar-btn">
+      <!-- Info User -->
+      <div id="sidebar-user" style="margin-bottom:8px;"></div>
+      <!-- Logout -->
+      <a class="nav-item" id="logout-btn" style="color:var(--danger);">
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="nav-label">Keluar</span>
+      </a>
+      <!-- Toggle Sidebar -->
+      <a class="nav-item" id="toggle-sidebar-btn" style="margin-top:4px;">
         <i class="bi bi-layout-sidebar-inset-reverse" id="toggle-icon"></i>
         <span class="nav-label">Tutup Sidebar</span>
       </a>
     </div>
   </nav>
 
-  <!-- OVERLAY MOBILE -->
+  <!-- Overlay mobile -->
   <div class="overlay-bg" id="overlay-bg"></div>
 
-  <!-- MAIN -->
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
   <div id="main-content">
+
     <!-- TOPBAR -->
     <div id="topbar">
       <div style="display:flex;align-items:center;gap:12px;">
         <span class="page-title" id="topbar-title">Dashboard</span>
       </div>
       <div class="topbar-actions">
-        <div class="search-wrap" style="position:relative;">
+        <div class="search-wrap">
           <i class="bi bi-search" style="font-size:13px;"></i>
           <input type="text" id="global-search" placeholder="Cari fitur..."/>
           <div id="search-results"></div>
@@ -140,88 +120,314 @@
       </div>
     </div>
 
-    <!-- PAGES (konten akan dimuat dari file terpisah) -->
-    <div class="page active" id="page-dashboard"></div>
-    <div class="page" id="page-finance"></div>
-    <div class="page" id="page-study"></div>
-    <div class="page" id="page-grades"></div>
-    <div class="page" id="page-schedule"></div>
-    <div class="page" id="page-calendar"></div>
-    <div class="page" id="page-clock"></div>
-    <div class="page" id="page-calc"></div>
-  </div>
+    <!-- ============================================================
+         HALAMAN-HALAMAN (dimuat dari folder pages/)
+         Untuk mengedit konten tiap fitur, buka file di folder pages/
+         ============================================================ -->
 
-  <!-- MOBILE TOGGLE -->
+    <!-- 1. Dashboard   → edit: pages/dashboard.html   -->
+    <div class="page active" id="page-dashboard">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
+        <div class="stat-card">
+          <div class="stat-label"><i class="bi bi-wallet2"></i> Saldo</div>
+          <div class="stat-value" id="dash-balance" style="color:var(--success)">Rp 0</div>
+          <div class="stat-sub">Total keuangan</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="bi bi-book-fill"></i> Sesi Belajar</div>
+          <div class="stat-value" id="dash-study">0</div>
+          <div class="stat-sub">Berhasil hari ini</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="bi bi-check2-all"></i> Jadwal</div>
+          <div class="stat-value" id="dash-schedule">0%</div>
+          <div class="stat-sub">Selesai hari ini</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><i class="bi bi-mortarboard-fill"></i> Rata-rata</div>
+          <div class="stat-value" id="dash-grade">-</div>
+          <div class="stat-sub">Nilai terakhir</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><i class="bi bi-graph-up-arrow"></i> Ringkasan Keuangan 7 Hari Terakhir</div>
+        <canvas id="dash-chart" height="120"></canvas>
+      </div>
+    </div>
+
+    <!-- 2. Finance     → edit: pages/finance.html     -->
+    <div class="page" id="page-finance">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px;">
+        <div class="stat-card">
+          <div class="stat-label">Pemasukan</div>
+          <div class="stat-value" id="total-income" style="color:var(--success)">Rp 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pengeluaran</div>
+          <div class="stat-value" id="total-expense" style="color:var(--danger)">Rp 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Saldo</div>
+          <div class="stat-value" id="total-balance">Rp 0</div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-title"><i class="bi bi-graph-up-arrow"></i> Grafik Keuangan 7 Hari Terakhir</div>
+        <canvas id="finance-chart" height="160"></canvas>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card">
+          <div class="card-title"><i class="bi bi-plus-circle-fill"></i> Tambah Transaksi</div>
+          <div class="form-group"><label class="form-label">Deskripsi</label><input class="form-input" id="fin-desc" placeholder="Nama transaksi..."/></div>
+          <div class="form-group"><label class="form-label">Jumlah (Rp)</label><input class="form-input" id="fin-amount" type="number" placeholder="0"/></div>
+          <div class="form-group"><label class="form-label">Kategori</label><input class="form-input" id="fin-cat" placeholder="Makan, Transport, dll..."/></div>
+          <div class="form-group"><label class="form-label">Tipe</label>
+            <select class="form-select" id="fin-type">
+              <option value="income">Pemasukan</option>
+              <option value="expense">Pengeluaran</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Tanggal</label><input class="form-input" id="fin-date" type="date"/></div>
+          <button class="btn btn-primary" id="fin-add-btn" style="width:100%"><i class="bi bi-plus-lg"></i> Tambah Transaksi</button>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="bi bi-clock-history"></i> Riwayat Transaksi</div>
+          <div id="finance-list" style="max-height:360px;overflow-y:auto;">
+            <div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">Belum ada transaksi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Belajar     → edit: pages/study.html       -->
+    <div class="page" id="page-study">
+      <div style="display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start;">
+        <div class="card" style="position:sticky;top:80px;">
+          <div class="card-title"><i class="bi bi-plus-circle-fill"></i> Tambah Sesi Belajar</div>
+          <div class="form-group"><label class="form-label">Nama Pelajaran / Topik</label><input class="form-input" id="study-name" placeholder="Contoh: Matematika Bab 3"/></div>
+          <div class="form-group"><label class="form-label">Target Waktu (kelipatan 30 menit)</label>
+            <select class="form-select" id="study-duration">
+              <option value="30">30 menit</option><option value="60">60 menit</option>
+              <option value="90">90 menit</option><option value="120">120 menit</option>
+              <option value="150">150 menit</option><option value="180">180 menit</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" id="study-add-btn" style="width:100%"><i class="bi bi-play-circle-fill"></i> Tambah Sesi</button>
+          <div class="divider"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:10px;padding:10px;text-align:center;">
+              <div style="font-size:20px;font-weight:800;color:var(--success);" id="study-stat-done">0</div>
+              <div style="font-size:11px;color:var(--text-muted);">Berhasil</div>
+            </div>
+            <div style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:10px;padding:10px;text-align:center;">
+              <div style="font-size:20px;font-weight:800;color:var(--danger);" id="study-stat-fail">0</div>
+              <div style="font-size:11px;color:var(--text-muted);">Gagal</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-weight:700;font-size:14px;margin-bottom:12px;color:var(--text-secondary);">
+            <i class="bi bi-list-ul" style="color:var(--accent);margin-right:6px;"></i>Daftar Sesi Belajar
+          </div>
+          <div id="study-list">
+            <div style="text-align:center;color:var(--text-muted);padding:40px;font-size:13px;">
+              <i class="bi bi-book" style="font-size:32px;display:block;margin-bottom:8px;"></i>Belum ada sesi belajar
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Nilai       → edit: pages/grades.html      -->
+    <div class="page" id="page-grades">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="card">
+          <div class="card-title"><i class="bi bi-plus-circle-fill"></i> Hitung Rata-rata Nilai</div>
+          <div id="grade-inputs">
+            <div class="grade-row">
+              <input class="form-input" placeholder="Nama Mapel" style="flex:2"/>
+              <input class="form-input" type="number" placeholder="Nilai" min="0" max="100"/>
+              <button class="btn btn-danger btn-sm remove-grade-row"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="add-grade-row" style="margin-top:8px;margin-bottom:16px;"><i class="bi bi-plus-lg"></i> Tambah Mapel</button>
+          <div class="divider"></div>
+          <div class="form-group"><label class="form-label">Nama Set Nilai</label><input class="form-input" id="grade-set-name" placeholder="Contoh: UTS Semester 1"/></div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" id="calc-avg-btn" style="flex:1"><i class="bi bi-calculator"></i> Hitung</button>
+            <button class="btn btn-success" id="save-grade-btn" style="flex:1"><i class="bi bi-floppy-fill"></i> Simpan</button>
+          </div>
+          <div id="grade-result" style="margin-top:16px;display:none;">
+            <div class="divider"></div>
+            <div style="text-align:center;">
+              <div style="font-size:13px;color:var(--text-muted);">Rata-rata Nilai</div>
+              <div style="font-size:48px;font-weight:800;" id="avg-result">-</div>
+              <div style="font-size:12px;" id="avg-grade-label"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><i class="bi bi-journal-richtext"></i> Riwayat Nilai</div>
+          <div id="grade-history-list" style="max-height:420px;overflow-y:auto;">
+            <div style="text-align:center;color:var(--text-muted);padding:20px;font-size:13px;">Belum ada riwayat</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Jadwal      → edit: pages/schedule.html    -->
+    <div class="page" id="page-schedule">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+        <div style="font-size:14px;font-weight:600;color:var(--text-secondary);" id="today-date-label"></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" id="mark-holiday-btn"><i class="bi bi-star-fill"></i> Tandai Hari Libur</button>
+          <button class="btn btn-primary btn-sm" id="add-schedule-btn"><i class="bi bi-plus-lg"></i> Tambah Jadwal</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;">
+        <div>
+          <div id="holiday-banner" style="display:none;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:12px;padding:12px 16px;margin-bottom:12px;font-size:13px;color:var(--warning);align-items:center;gap:8px;">
+            <i class="bi bi-star-fill"></i>
+            <span id="holiday-text">Hari ini adalah hari libur / ada acara penting!</span>
+            <button class="btn btn-ghost btn-sm" id="unmark-holiday-btn" style="margin-left:auto;">Hapus</button>
+          </div>
+          <div id="schedule-list">
+            <div style="text-align:center;color:var(--text-muted);padding:40px;font-size:13px;">
+              <i class="bi bi-calendar-check" style="font-size:32px;display:block;margin-bottom:8px;"></i>Belum ada jadwal hari ini
+            </div>
+          </div>
+        </div>
+        <div style="min-width:160px;text-align:center;">
+          <div class="card" style="display:inline-block;padding:16px;">
+            <div class="card-title" style="justify-content:center;margin-bottom:8px;"><i class="bi bi-pie-chart-fill"></i> Progress</div>
+            <div class="donut-wrap">
+              <canvas id="schedule-donut" width="140" height="140"></canvas>
+              <div class="donut-center">
+                <div class="pct" id="schedule-pct">0%</div>
+                <div class="lbl">selesai</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Kalender    → edit: pages/calendar.html    -->
+    <div class="page" id="page-calendar">
+      <div style="max-width:500px;margin:0 auto;">
+        <div class="card">
+          <div class="cal-header">
+            <button class="icon-btn" id="cal-prev"><i class="bi bi-chevron-left"></i></button>
+            <div style="font-weight:700;font-size:16px;" id="cal-month-label"></div>
+            <button class="icon-btn" id="cal-next"><i class="bi bi-chevron-right"></i></button>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+        </div>
+        <div class="card" style="margin-top:16px;">
+          <div class="card-title"><i class="bi bi-info-circle-fill"></i> <span id="cal-selected-date">Pilih tanggal</span></div>
+          <div id="cal-events"><div style="font-size:13px;color:var(--text-muted);">Klik tanggal untuk lihat jadwal</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Jam         → edit: pages/clock.html       -->
+    <div class="page" id="page-clock">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;max-width:800px;margin:0 auto;">
+        <div class="card" style="text-align:center;padding:32px;">
+          <div class="tz-label">WIB — Waktu Indonesia Barat</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">UTC+7 · Jakarta, Bandung, Surabaya</div>
+          <div class="clock-display" id="clock-wib">--:--:--</div>
+          <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);" id="date-wib"></div>
+        </div>
+        <div class="card" style="text-align:center;padding:32px;">
+          <div class="tz-label">WITA — Waktu Indonesia Tengah</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">UTC+8 · Makassar, Bali, Lombok</div>
+          <div class="clock-display" id="clock-wita">--:--:--</div>
+          <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);" id="date-wita"></div>
+        </div>
+        <div class="card" style="text-align:center;padding:32px;">
+          <div class="tz-label">WIT — Waktu Indonesia Timur</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:12px;">UTC+9 · Ambon, Jayapura, Papua</div>
+          <div class="clock-display" id="clock-wit">--:--:--</div>
+          <div style="margin-top:8px;font-size:13px;color:var(--text-secondary);" id="date-wit"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Kalkulator  → edit: pages/calculator.html  -->
+    <div class="page" id="page-calc">
+      <div style="max-width:340px;margin:0 auto;">
+        <div class="card">
+          <div class="calc-display">
+            <div class="calc-expr"   id="calc-expr"></div>
+            <div class="calc-result" id="calc-result">0</div>
+          </div>
+          <div class="calc-grid">
+            <button class="calc-btn clear" data-action="clear">C</button>
+            <button class="calc-btn op"    data-action="sign">±</button>
+            <button class="calc-btn op"    data-action="percent">%</button>
+            <button class="calc-btn op"    data-action="op" data-op="/">÷</button>
+            <button class="calc-btn" data-action="num" data-num="7">7</button>
+            <button class="calc-btn" data-action="num" data-num="8">8</button>
+            <button class="calc-btn" data-action="num" data-num="9">9</button>
+            <button class="calc-btn op" data-action="op" data-op="*">×</button>
+            <button class="calc-btn" data-action="num" data-num="4">4</button>
+            <button class="calc-btn" data-action="num" data-num="5">5</button>
+            <button class="calc-btn" data-action="num" data-num="6">6</button>
+            <button class="calc-btn op" data-action="op" data-op="-">−</button>
+            <button class="calc-btn" data-action="num" data-num="1">1</button>
+            <button class="calc-btn" data-action="num" data-num="2">2</button>
+            <button class="calc-btn" data-action="num" data-num="3">3</button>
+            <button class="calc-btn op" data-action="op" data-op="+">+</button>
+            <button class="calc-btn" data-action="num" data-num="0" style="grid-column:span 2">0</button>
+            <button class="calc-btn" data-action="dot">.</button>
+            <button class="calc-btn eq" data-action="equals">=</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+
+  <!-- Mobile Toggle -->
   <div id="mobile-toggle"><i class="bi bi-list"></i></div>
 
-  <!-- MODALS -->
-  <!-- Add Schedule Modal -->
+  <!-- Modal Tambah Jadwal -->
   <div class="modal-overlay" id="modal-schedule">
     <div class="modal-box">
       <div class="modal-title">
         <span><i class="bi bi-calendar-plus-fill" style="color:var(--accent);margin-right:8px;"></i>Tambah Jadwal</span>
         <span style="cursor:pointer;color:var(--text-muted);" id="close-modal-schedule"><i class="bi bi-x-lg"></i></span>
       </div>
-      <div class="form-group">
-        <label class="form-label">Nama Kegiatan</label>
-        <input class="form-input" id="sch-name" placeholder="Contoh: Olahraga pagi"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Waktu</label>
-        <input class="form-input" id="sch-time" type="time"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Kategori</label>
+      <div class="form-group"><label class="form-label">Nama Kegiatan</label><input class="form-input" id="sch-name" placeholder="Contoh: Olahraga pagi"/></div>
+      <div class="form-group"><label class="form-label">Waktu</label><input class="form-input" id="sch-time" type="time"/></div>
+      <div class="form-group"><label class="form-label">Kategori</label>
         <select class="form-select" id="sch-cat">
-          <option>📚 Belajar</option>
-          <option>🏃 Olahraga</option>
-          <option>🍽️ Makan</option>
-          <option>💼 Kerja</option>
-          <option>🎮 Hiburan</option>
-          <option>🛌 Istirahat</option>
+          <option>📚 Belajar</option><option>🏃 Olahraga</option>
+          <option>🍽️ Makan</option><option>💼 Kerja</option>
+          <option>🎮 Hiburan</option><option>🛌 Istirahat</option>
           <option>📝 Lainnya</option>
         </select>
       </div>
-      <button class="btn btn-primary" id="sch-save-btn" style="width:100%;">
-        <i class="bi bi-plus-lg"></i> Simpan
-      </button>
+      <button class="btn btn-primary" id="sch-save-btn" style="width:100%;"><i class="bi bi-plus-lg"></i> Simpan</button>
     </div>
   </div>
 
-  <!-- Toast Container -->
+  <!-- Toast Notifikasi -->
   <div id="toast-container"></div>
 
-  <!-- Script untuk memuat konten halaman dari file terpisah -->
-  <script>
-    (async function() {
-      const pages = [
-        { id: 'dashboard', file: 'dashboard.html' },
-        { id: 'finance',   file: 'finance.html' },
-        { id: 'study',     file: 'study.html' },
-        { id: 'grades',    file: 'grades.html' },
-        { id: 'schedule',  file: 'schedule.html' },
-        { id: 'calendar',  file: 'calendar.html' },
-        { id: 'clock',     file: 'clock.html' },
-        { id: 'calc',      file: 'calc.html' }
-      ];
+  <!-- ============================================================
+       JAVASCRIPT — urutan load PENTING, jangan diubah!
+       ============================================================ -->
+  <script src="js/utils.js"></script>       <!-- cache buster, helper, nav, search, init -->
+  <script src="js/dashboard.js"></script>   <!-- chart dashboard -->
+  <script src="js/finance.js"></script>     <!-- finance tracker -->
+  <script src="js/study.js"></script>       <!-- monitoring belajar -->
+  <script src="js/grades.js"></script>      <!-- rata-rata nilai -->
+  <script src="js/schedule.js"></script>    <!-- jadwal harian -->
+  <script src="js/calendar.js"></script>    <!-- kalender -->
+  <script src="js/clock.js"></script>       <!-- jam indonesia -->
+  <script src="js/calculator.js"></script>  <!-- kalkulator -->
 
-      const loadPage = async (id, file) => {
-        try {
-          const res = await fetch(file);
-          const html = await res.text();
-          document.getElementById(`page-${id}`).innerHTML = html;
-        } catch (err) {
-          console.error(`Gagal memuat ${file}:`, err);
-        }
-      };
-
-      await Promise.all(pages.map(p => loadPage(p.id, p.file)));
-
-      // Setelah semua konten dimuat, muat script.js
-      const script = document.createElement('script');
-      script.src = 'script.js';
-      document.body.appendChild(script);
-    })();
-  </script>
 </body>
 </html>

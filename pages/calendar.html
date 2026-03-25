@@ -1,0 +1,29 @@
+<!-- ============================================================
+     pages/calendar.html — Halaman Kalender
+     ============================================================ -->
+<div class="page" id="page-calendar">
+  <div style="max-width:500px;margin:0 auto;">
+
+    <!-- Grid Kalender -->
+    <div class="card">
+      <div class="cal-header">
+        <button class="icon-btn" id="cal-prev"><i class="bi bi-chevron-left"></i></button>
+        <div style="font-weight:700;font-size:16px;" id="cal-month-label"></div>
+        <button class="icon-btn" id="cal-next"><i class="bi bi-chevron-right"></i></button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+
+    <!-- Detail Jadwal per Tanggal -->
+    <div class="card" style="margin-top:16px;">
+      <div class="card-title">
+        <i class="bi bi-info-circle-fill"></i>
+        <span id="cal-selected-date">Pilih tanggal</span>
+      </div>
+      <div id="cal-events">
+        <div style="font-size:13px;color:var(--text-muted);">Klik tanggal untuk lihat jadwal</div>
+      </div>
+    </div>
+
+  </div>
+</div>
