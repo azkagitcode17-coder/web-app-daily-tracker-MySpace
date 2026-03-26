@@ -5,7 +5,7 @@
    ============================================================ */
 
 // =================== CACHE BUSTER ===================
-const APP_VERSION = '1.4.0';
+const APP_VERSION = '1.2.0';
 const storedVersion = localStorage.getItem('app_version');
 if (storedVersion !== APP_VERSION) {
   localStorage.setItem('app_version', APP_VERSION);
@@ -215,33 +215,59 @@ document.addEventListener('firebaseReady', () => {
   // Tampilkan info user di sidebar
   renderUserInfo(window.currentUser);
 
-  // Firebase siap — load data dari server
-  window._localInitDone = false;
-  loadDashboard();
-  loadSchedule();
+  // Firebase siap — load SEMUA data dari Firestore
+  // Ini yang memastikan device baru / login baru langsung dapat data lengkap
+  loadAllFromFirestore();
 });
 
-// =================== INIT DATA ===================
-// Key localStorage pakai uid agar data tiap user terpisah
+// =================== LOAD SEMUA DATA DARI FIRESTORE ===================
+async function loadAllFromFirestore() {
+  // Tampilkan loading indicator kecil
+  showToast('Memuat data...', 'info');
+
+  // Load semua fitur secara paralel (lebih cepat)
+  await Promise.allSettled([
+    loadDashboard(),
+    loadSchedule(),
+    loadFinance(),
+    loadStudy(),
+    loadGrades()
+  ]);
+
+  // Render ulang halaman yang sedang aktif
+  const activePage = document.querySelector('.page.active');
+  if (activePage) {
+    const pageId = activePage.id.replace('page-', '');
+    // Trigger render ulang halaman aktif dengan data terbaru dari server
+    if (pageId === 'schedule')  { renderToday(); renderScheduleList(); }
+    if (pageId === 'study')     renderStudy();
+    if (pageId === 'grades')    renderGradeHistory();
+    if (pageId === 'finance')   renderFinance();
+    if (pageId === 'dashboard') updateDashboard();
+  }
+}
+
+// =================== INIT DATA (localStorage) ===================
+// Key localStorage pakai uid agar data tiap user terpisah di device yang sama
 const lsKey = (key) => `${getUID()}_${key}`;
 
+// Fallback hanya dipakai kalau Firebase gagal konek (offline/timeout)
 function initLocalFallback() {
   if (window._localInitDone) return;
   window._localInitDone = true;
-  financeData      = JSON.parse(localStorage.getItem(lsKey('financeData'))  || '[]');
-  studyData        = JSON.parse(localStorage.getItem(lsKey('studyData'))    || '[]');
-  gradeHistory     = JSON.parse(localStorage.getItem(lsKey('gradeHistory')) || '[]');
-  allScheduleItems = JSON.parse(localStorage.getItem(lsKey('scheduleData'))|| '[]');
-  holidayData      = JSON.parse(localStorage.getItem(lsKey('holidayData'))  || '{}');
+  financeData      = JSON.parse(localStorage.getItem(lsKey('financeData'))   || '[]');
+  studyData        = JSON.parse(localStorage.getItem(lsKey('studyData'))     || '[]');
+  gradeHistory     = JSON.parse(localStorage.getItem(lsKey('gradeHistory'))  || '[]');
+  allScheduleItems = JSON.parse(localStorage.getItem(lsKey('scheduleData'))  || '[]');
+  holidayData      = JSON.parse(localStorage.getItem(lsKey('holidayData'))   || '{}');
   scheduleData     = allScheduleItems.filter(s => s.date === today());
   updateDashboard();
   checkHoliday();
   renderScheduleList();
+  showToast('Mode offline — data dari cache lokal', 'info');
 }
 
-// Hanya jalankan local fallback kalau Firebase sudah konfirmasi ada user
-// (firebase.js akan redirect ke login.html kalau belum login)
-// Fallback ini jalan kalau ada masalah koneksi setelah login
+// Fallback offline: jalankan hanya jika Firebase benar-benar tidak merespons dalam 5 detik
 setTimeout(() => {
-  if (!window.firebaseReady && window.currentUser) initLocalFallback();
-}, 3000);
+  if (!window.firebaseReady) initLocalFallback();
+}, 5000);
